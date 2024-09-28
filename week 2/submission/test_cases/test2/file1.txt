@@ -1,4 +1,0 @@
-This is a test document.
-It contains several sentences.
-All sentences should align perfectly.
-This is the final sentence.

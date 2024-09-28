@@ -61,7 +61,7 @@ class Agent:
     def __init__(self) -> None:
         self.memory = 0
 
-    def BFS(self, initialState: State):
+    def Astar(self, initialState: State):
         frontier = []
         heapq.heappush(frontier, (initialState.g, initialState))
         explored = set()
@@ -88,9 +88,9 @@ class Agent:
 
         return None
 
-    def solutionBFS(self, initialState: State):
+    def solutionAstar(self, initialState: State):
 
-        goal = self.BFS(initialState)
+        goal = self.Astar(initialState)
         path = [goal]
         if not goal:
             return None
@@ -150,7 +150,7 @@ def usage_analysis():
 
             start_time = time()
             search_agent = Agent()
-            search_agent.BFS(initial_state)
+            search_agent.Astar(initial_state)
             end_time = time()
 
             time_taken += end_time - start_time
@@ -168,7 +168,7 @@ def main():
     goal = default
     initial_state = State(ini, goal)
     search_agent = Agent()
-    search_agent.solutionBFS(initial_state)
+    search_agent.solutionAstar(initial_state)
 
     usage_analysis()
 
