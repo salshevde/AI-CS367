@@ -1,1 +1,3 @@
-The quick brown fox jumps.
+This is a sample document.
+It contains identical sentences.
+The content is exactly the same.

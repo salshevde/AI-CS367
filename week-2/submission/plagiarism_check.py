@@ -3,13 +3,13 @@ import heapq
 
 #  Utility Functions
 def preprocess(text):
-    text = text.lower()
+    text = [line.lower().strip()  for line in text]
     for i, ch in enumerate(text):
         if ch in "!#$%&'()*+,-/:;<=>?@[\\]^_{|}~`":
             text[i] = text.replace(ch,"")
-
-    sentences = text.split()
-    return [sentence.strip() for sentence in sentences if sentence.strip()]
+    
+    
+    return [line.split() for line in text if line]
 
 
 def levenshtein_dist(s1: str, s2: str):
@@ -120,36 +120,73 @@ class Agent:
         return None
 
 
-def detect_plagiarism(file1_path, file2_path):
+def detect_plagiarism(file1_path, file2_path,threshold = 3):
     file1 = open(file1_path, "r")
     file2 = open(file2_path, "r")
 
-    text1 = preprocess(file1.read())
-    text2 = preprocess(file2.read())
+    text1 = preprocess(file1.readlines())
+    text2 = preprocess(file2.readlines())
     
     search_agent = Agent()
     total_cost = search_agent.Astar(text1, text2, State(0, 0, 0,text1,text2))
+
+
+    plagiarised = []
+    weighted_plagiarism_cost = 0
+    for i,sentence1 in enumerate(text1):
+        for j,sentence2 in enumerate(text2):
+            edit_dist = levenshtein_dist(sentence1,sentence2)
+            weighted_plagiarism_cost+= (1-edit_dist/max(len(sentence1),len(sentence2)))
+            if edit_dist<=threshold:
+                plagiarised.append((i,j,' '.join(sentence1),' '.join(sentence2),edit_dist))
+                
+                print(plagiarised[-1])
+
+
+    plagiarism_percentage = min(100.0,weighted_plagiarism_cost*100/max(len(text1),len(text2)))
+    print("\nPLAGIARISM-PERCENTAGE: ",plagiarism_percentage)
+
+    if plagiarism_percentage>=95:
+        print("Identical Documents")
+    elif plagiarism_percentage>=60:
+        print("Similar Document")
+        
+    elif plagiarism_percentage>=30:
+        print("Partial Overlap")
+        
+    elif plagiarism_percentage>=10:
+        print("Little Overlap")
+
+    else:
+        print("No Overlap")
+    print("\n\n")
     file1.close()
     file2.close()
-
     return total_cost,len(text1),len(text2)
 
 
 # Analysis Functions
 
 def test():
-    print(f"{'Test-type':<35}|{'Alignment Cost':<20}|{'Length of Doc1':<20}|{'Length of Doc2':<20}")
-    print("_"*100)
+
+    statements = []
     for i in range(1, 5):
         test_case = f"./week-2/submission/test_cases/test{i}/"
         title_file = open(f"./week-2/submission/test_cases/test{i}/case-title.txt")
         
         title = title_file.read()
+        print(title)
+        print("_"*100)
         c,l1,l2 = detect_plagiarism(test_case + "file1.txt", test_case + "file2.txt")
-        print(f"{title:<35}|{c:<20}|{l1:<20}|{l2:<20}")
+        statements.append(f"{title:<35}|{c:<20}|{l1:<20}|{l2:<20}")
         title_file.close()
-def usage_analysis():
-    pass
+
+    print("-"*40+"Test-Cases-Analysis"+"-"*40)
+    print(f"{'Test-type':<35}|{'Alignment Cost':<20}|{'Length of Doc1':<20}|{'Length of Doc2':<20}")
+    print("_"*100)
+    for i in range(4):
+        print(statements[i])
+
 
 
 #  Main
