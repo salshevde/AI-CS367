@@ -138,13 +138,15 @@ def detect_plagiarism(file1_path, file2_path):
 # Analysis Functions
 
 def test():
+    print(f"{'Test-type':<35}|{'Alignment Cost':<20}|{'Length of Doc1':<20}|{'Length of Doc2':<20}")
+    print("_"*100)
     for i in range(1, 5):
         test_case = f"./week-2/submission/test_cases/test{i}/"
         title_file = open(f"./week-2/submission/test_cases/test{i}/case-title.txt")
         
         title = title_file.read()
-        print(title)
-        print(detect_plagiarism(test_case + "file1.txt", test_case + "file2.txt"))
+        c,l1,l2 = detect_plagiarism(test_case + "file1.txt", test_case + "file2.txt")
+        print(f"{title:<35}|{c:<20}|{l1:<20}|{l2:<20}")
         title_file.close()
 def usage_analysis():
     pass
