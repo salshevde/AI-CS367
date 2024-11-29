@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as stats
 from scipy.stats import poisson
-from plot import plot
+import matplotlib.pyplot as plt
 
 MOVEMENT_COST = -2
 RENT_COST = 10
@@ -49,35 +49,50 @@ def expected_reward(b1,b2,action,value):
                     total_expected_reward+= prob*(reward+DISCOUNT_RATE*value[new_bikes_1,new_bikes_2])
     return total_expected_reward
 
+def plot(value,policy):
+    plt.figure(figsize=(12,6))
+
+    plt.subplot(1,2,1)
+    plt.contour(policy,levels = np.arange(-MAX_MOVE,MAX_MOVE+1),cmap='coolwarm')
+    plt.colorbar(label='Overnight Bike Movement')
+    plt.title('Policy Transfer Matrix')
+    plt.xlabel('Location 2')
+    plt.ylabel('Location 1')
+
+    plt.subplot(1,2,2)
+    plt.imshow(value,cmap='viridis',origin='lower')
+    plt.colorbar(label='Value')
+    plt.title('Value Function')
+    plt.xlabel('Location 2')
+    plt.ylabel('Location 1')
+
+    plt.tight_layout
+    plt.show()
 
 def policy_iteration(theta = 1e-4):
 
     value = np.zeros((MAX_BIKES+1,MAX_BIKES+1))
     policy = np.zeros((MAX_BIKES+1,MAX_BIKES+1),dtype=int)
 
-    iteration =0
+# POLICY Evaluation
+    delta =1
+    while delta>theta:
+        delta = 0
+        for i in range(MAX_BIKES+1):
+            for j in range(MAX_BIKES+1):
+                print(i,j)
+                v = value[i,j]
+                action = policy[i,j]
+                value[i,j] = expected_reward(i,j,action,value)
+                delta = max(delta,abs(v-value[i,j]))
+    # POlicy Improvement 
     while True:
-        print(f"Iteration: {iteration}")
-    # POLICY Evaluation
-        while True:
-            delta = 0
-            for i in range(MAX_BIKES+1):
-                for j in range(MAX_BIKES+1):
-                    v = value[i,j]
-                    action = policy[i,j]
-                    value[i,j] = expected_reward(i,j,action,value)
-                    delta = max(delta,abs(v-value[i,j]))
-
-                if delta<theta:
-                    break
-                print(delta)
-        # POlicy Improvement 
         policy_stable = True
 
         for i in range(MAX_BIKES+1):
             for j in range(MAX_BIKES+1):
                 action = policy[i,j]
-                best_action = max(range(-MAX_MOVE,MAX_MOVE+1),key=lambda x: State.expected_reward(i,j,a,value))
+                best_action = max(range(-MAX_MOVE,MAX_MOVE+1),key=lambda x: expected_reward(i,j,x,value))
                 policy[i,j] = best_action
 
                 if action!= best_action:
@@ -85,8 +100,7 @@ def policy_iteration(theta = 1e-4):
         if policy_stable:
             break
 
-        iteration+=1
-    
+
     return value,policy
 
 if __name__ == "__main__":

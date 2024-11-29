@@ -9,7 +9,7 @@ class Direction(Enum):
     LEFT = 4
 
 class State:
-    def __init__(self,start=(2,1),goal_positive=(0,3),goal_negative=(1,3),non_terminal_reward = -0.04):
+    def __init__(self,start=(2,1),goal_positive=(3,0),goal_negative=(3,1),non_terminal_reward = -0.04):
         self.grid = np.array((4,3))
         self.start = start
         self.goal_negative = goal_negative
@@ -74,6 +74,9 @@ def value_iteration(reward,discount = 0.95,theta = 1e-4):
 
     V = np.zeros((4,3))
     directions = list(Direction)
+
+    V[3,0] =1
+    V[3,1] = -1
     while True:
         V_new = np.copy(V)
         delta = 0
