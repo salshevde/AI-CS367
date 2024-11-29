@@ -27,8 +27,6 @@ class State:
     def pmf(self,n,l):
         return stats.poisson.pmf(n,l)
 
-
-
 def expected_reward(b1,b2,action,value):
     bikes_1,bikes_2,move_reward = State(b1,b2).move_locations(action)
     total_expected_reward = move_reward
@@ -80,7 +78,6 @@ def policy_iteration(theta = 1e-4):
         delta = 0
         for i in range(MAX_BIKES+1):
             for j in range(MAX_BIKES+1):
-                print(i,j)
                 v = value[i,j]
                 action = policy[i,j]
                 value[i,j] = expected_reward(i,j,action,value)

@@ -35,7 +35,7 @@ class State:
     def pmf(self,n,l):
         return stats.poisson.pmf(n,l)
 
-def parking_cost(self,bikes):
+def parking_cost(bikes):
     return PARKING_COST if bikes>MAX_FREE_PARKING else 0
 
 
